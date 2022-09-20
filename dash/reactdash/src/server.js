@@ -24,7 +24,7 @@ const detatchDeviceChannels = () => {
     }
 };
 
-const attatchDeviceChannels = async () => {
+const attachDeviceChannels = async () => {
     if (device_controller.device_hid === '') return;
     device_controller.out_channel = client.channels.get(device_controller.device_hid);
     device_controller.response_channel = client.channels.get(RESPONSE_CHANNEL_PREFIX + device_controller.device_hid);
@@ -43,7 +43,7 @@ const setControlledDevice = async (hid) => {
 
     detatchDeviceChannels();
 
-    await attatchDeviceChannels();
+    await attachDeviceChannels();
 
 };
 
@@ -66,7 +66,14 @@ const setDeviceMessageCallback = (callback) => {
     device_controller.on_message_callback = callback;
 };
 
+const getDeviceHID = () => {
+    return device_controller.device_hid;
+};
 
+
+/*
+
+*/
 const bindDeviceList = async (on_device_hid) => {
     device_list_channel = client.channels.get(DEVICE_LIST_CHANNEL_NAME);
     await device_list_channel.attach();
@@ -105,4 +112,5 @@ export {
     setControlledDevice,        // set device to control
     setDeviceMessageCallback,   // 
     publishToDevice,            // send data to device through server
+    getDeviceHID                // return hid of current device
 };
