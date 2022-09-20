@@ -5,6 +5,8 @@ const RESPONSE_CHANNEL_PREFIX = 'MCUDEVICE-';
 
 let connect_options = {};
 let client = null;
+let device_connect_callback = null;
+let device_list_buffer = [];
 let device_list_channel = null;
 
 const device_controller = {
@@ -14,6 +16,9 @@ const device_controller = {
     on_message_callback:null // 
 };
 
+/*
+    Disconnect all device connections
+*/
 const detatchDeviceChannels = () => {
     if (device_controller.out_channel != null) {
         device_controller.out_channel.detatch();
@@ -24,6 +29,9 @@ const detatchDeviceChannels = () => {
     }
 };
 
+/*
+    Connenct all device connections
+*/
 const attachDeviceChannels = async () => {
     if (device_controller.device_hid === '') return;
     device_controller.out_channel = client.channels.get(device_controller.device_hid);
@@ -36,20 +44,18 @@ const attachDeviceChannels = async () => {
 };
 
 /*
-    Set connected device channel
+    Set connected device channel and reconnect to channels
 */
 const setControlledDevice = async (hid) => {
     device_controller.device_hid = hid;
 
     detatchDeviceChannels();
-
-    await attachDeviceChannels();
-
+    attachDeviceChannels();
 };
 
 const onDeviceResponse = (response) => {
     if (device_controller.on_message_callback != null) {
-        device_controller.on_message_callback(response);
+        device_controller.on_message_callback(response.data);
     }
 };   
 
@@ -58,35 +64,68 @@ const onDeviceResponse = (response) => {
 */
 const publishToDevice = async (value) => {
     if (device_controller.out_channel != null) {
-        await device_controller.out_channel.publish({some:value});
+        device_controller.out_channel.publish({some:value});
     }
 };
 
+/*
+    Set callback to call when message received from device
+*/
 const setDeviceMessageCallback = (callback) => {
     device_controller.on_message_callback = callback;
 };
 
+/*
+    Return the HID of the currently controlled device
+*/
 const getDeviceHID = () => {
     return device_controller.device_hid;
 };
 
 
-/*
 
-*/
-const bindDeviceList = async (on_device_hid) => {
+const addDeviceToList = (device) => {
+    if (device in device_list_buffer) {}
+    else {
+        if (device_connect_callback != null) {
+            device_connect_callback(device)
+        }
+        device_list_buffer[device_list_buffer.length] = device;
+    }
+};
+
+const connectToDeviceList = async () => {
     device_list_channel = client.channels.get(DEVICE_LIST_CHANNEL_NAME);
     await device_list_channel.attach();
-    await device_list_channel.history({}, function(err, messagesPage) {
+
+    /*
+        Get history
+    */
+    device_list_channel.history({}, function(err, messagesPage) {
+        
         for (let i = 0; i < messagesPage.items.length; i++) {
-            on_device_hid(messagesPage.items[i].data);
+            addDeviceToList(messagesPage.items[i].data);
         }
     });
+
+    /*
+        subscribe
+    */
     device_list_channel.subscribe(function (message) {
-        on_device_hid(message.data);
+        addDeviceToList(message.data);
     });
 };
 
+const setDeviceConnectCallback = (callback) => {
+    device_connect_callback = callback;
+    device_list_buffer.forEach(function (device) {
+        device_connect_callback(device);
+    });
+};
+
+/*
+    disconnect all ably connections
+*/
 const disconnect = () => {
     device_list_channel.unsubscribe();
     device_list_channel.detatch();
@@ -95,11 +134,18 @@ const disconnect = () => {
     client.close();
 };
 
+/*
+    connect to ably
+*/
 const connect = () => {
     client = new Ably.Realtime.Promise(connect_options);
+    connectToDeviceList();
     attatchDeviceChannels();
 };
 
+/*
+    Set options to use when connecting
+*/
 const setConnectOptions = (options) => {
     connect_options = options;
 };
@@ -108,7 +154,7 @@ export {
     setConnectOptions,          // Set Ably connect options
     connect,                    // Connect to device list and device
     disconnect,                 // Disconnect from Ably
-    bindDeviceList,             // Retrieve and subscribe to data from 'device_list' channel
+    setDeviceConnectCallback,   // Set callback to receive connected devices
     setControlledDevice,        // set device to control
     setDeviceMessageCallback,   // 
     publishToDevice,            // send data to device through server

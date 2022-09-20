@@ -1,11 +1,11 @@
 
 import React from 'react';
 import { Button, View } from 'react-native';
-import {bindDeviceList, setControlledDevice} from './server';
+import {setDeviceConnectCallback, setControlledDevice} from './server';
 
 /*
     on load 
-        bindDeviceList(add device to view)
+        setDeviceConnectCallback(add device to view)
 
     on list interaction 
         setControlledDevice
@@ -13,6 +13,8 @@ import {bindDeviceList, setControlledDevice} from './server';
 
 
 */
+
+
 
 export default function getListView({navigation}) {
     const on_press_handler = () => {
