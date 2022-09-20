@@ -39,10 +39,8 @@ int messageCreate(char *message, const char *channel, const char *address, const
   // Börjar med att spola ren message-buffern från tidigare data;
   StringFlush(message);
 
-  // Just nu har jag bara två strängar som ska concateneras som test, 'channel' och (MAC)'address'. Dock gjort det
-  // skalbart utefter att vi ämnar skjuta till med fler trängar att addera till meddelandet.
-
-  int check = 0;
+  // Just nu har jag bara tre test-strängar som ska concateneras som test, 'channel' och (MAC)'address'. Dock gjort 
+  // det skalbart utefter att vi ämnar skjuta till med fler trängar/data till meddelandet.
 
   stringMerge(message, channel);
   stringMerge(message, address);
