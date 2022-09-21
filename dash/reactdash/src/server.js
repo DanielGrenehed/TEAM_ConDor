@@ -55,9 +55,10 @@ const setControlledDevice = async (hid) => {
 };
 
 const onDeviceResponse = (response) => {
-    if (device_controller.on_message_callback != null) {
+    console.log(response)
+/*    if (device_controller.on_message_callback != null) {
         device_controller.on_message_callback(response.data);
-    }
+    }*/
 };   
 
 /*
@@ -65,7 +66,14 @@ const onDeviceResponse = (response) => {
 */
 const publishToDevice = async (value) => {
     if (device_controller.out_channel != null) {
-        device_controller.out_channel.publish({some:value});
+        console.log(value)
+        device_controller.out_channel.publish({data:String(value)}, function(err) {
+            if (err) {
+                console.log('publish failed with error ' + err)
+            } else {
+                console.log('published')
+            }
+        });
     }
 };
 

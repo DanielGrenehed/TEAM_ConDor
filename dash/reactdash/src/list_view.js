@@ -29,7 +29,6 @@ export default class ListView extends Component {
         this.setState(prevState => ({
             device_list: [...prevState.device_list, {key:device, name:device}]
         })) 
-        this.setState({ refresh: !this.state.refresh})
     }
 
     onPress(item) {
@@ -53,7 +52,7 @@ export default class ListView extends Component {
                 <TouchableHighlight
                     key={item.key}
                     onPress={() => this.onPress(item.key)}>
-                <View style={{backgroundColor: 'gold'}}>
+                <View style={{backgroundColor: 'lightblue', border: '1px solid rgba(0, 0, 0, 0.2)'}}>
                     <Text style={{textAlign: 'center', fontSize:32,}}>{item.name}</Text>
                 </View>
                 </TouchableHighlight>
