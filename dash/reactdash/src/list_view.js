@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Button, View } from 'react-native';
 import {setDeviceConnectCallback, setControlledDevice} from './server';
 
@@ -16,7 +16,17 @@ import {setDeviceConnectCallback, setControlledDevice} from './server';
 
 
 
+
+
+
 export default function getListView({navigation}) {
+    const [device_list, setDeviceList] = useState([]);
+    const appendDevice = (device) => {
+        device_list[device_list.length] = device;
+    };
+
+    setDeviceConnectCallback(appendDevice);
+    console.log(device_list.length);
     const on_press_handler = () => {
         // Set Controlled device first
         navigation.navigate('Device');

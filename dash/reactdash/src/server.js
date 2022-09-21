@@ -88,7 +88,7 @@ const addDeviceToList = (device) => {
     if (device in device_list_buffer) {}
     else {
         if (device_connect_callback != null) {
-            device_connect_callback(device)
+            device_connect_callback(device);
         }
         device_list_buffer[device_list_buffer.length] = device;
     }

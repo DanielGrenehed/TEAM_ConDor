@@ -1,0 +1,4 @@
+
+const ABLY_API_KEY="0gqsBg.N5mJ5Q:V9zEw0CA9Amaig1jLqKF_v8tiBC8HLL8QLdUEqCHWKY";
+
+export {ABLY_API_KEY};

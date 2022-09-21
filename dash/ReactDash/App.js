@@ -2,6 +2,7 @@ import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View } from 'react-native';
 import Navigator from './src/stack_navigator';
 import { setConnectOptions, connect, disconnect } from './src/server';
+import {ABLY_API_KEY} from './src/keys';
 
 /*
   on setup -
@@ -13,7 +14,7 @@ import { setConnectOptions, connect, disconnect } from './src/server';
     disconnect
 
 */
-
+setConnectOptions({key: ABLY_API_KEY});
 
 export default function App() {
   return (
