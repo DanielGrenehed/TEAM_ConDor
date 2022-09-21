@@ -16,38 +16,43 @@ import {setDeviceMessageCallback, publishToDevice, getDeviceHID} from './server'
 
 export default class DeviceView extends Component {
 
+    constructor (props) {
+        super(props);
+        this.onDeviceResponse = this.onDeviceResponse.bind(this);
+        setDeviceMessageCallback(this.onDeviceResponse)
+    }
+
     onButtonPress = () => {
         console.log('in device_view.js');
     }
 
-    hid = getDeviceHID();
+    onDeviceResponse = (response) => {
+        console.log(response)
+    }
+    
     onSliderUpdate = (x) => {
         console.log(x);
     }
     onSliderUpdate = (value) => {
         console.log(Math.floor(value));
-        //publishToDevice(Math.floor(value));
+        publishToDevice(Math.floor(value));
     }
 
     render () {
         return (
-            <View style={this.styles}><Text>{this.hid}</Text>
-            <Slider
-                style={{width: 200, height: 40}}
-                minimumValue={0}
-                maximumValue={180}
-                onSlidingComplete={this.onSliderUpdate}
-                />
+            <View style={{alignItems: 'center', justifyContent: 'center', flex:1}}>
+                <Slider
+                    style={{width: 200, height: 40, alignSelf: 'center', justifyContent: 'center'}}
+                    minimumValue={0}
+                    maximumValue={180}
+                    onSlidingComplete={this.onSliderUpdate}
+                    />
+                <View style={{backgroundColor: 'green', width: '100%', position: 'absolute', bottom: 0}}>
+                    <Text style={{textAlign: 'center', fontSize:40, backgroundColor: 'gold'}}>
+                        {getDeviceHID()}
+                    </Text>
+                </View>
             </View>)
     }
-
-    styles = StyleSheet.create({
-        container: {
-          flex: 1,
-          backgroundColor: '#fff',
-          alignItems: 'center',
-          justifyContent: 'center',
-        },
-      });
       
 }

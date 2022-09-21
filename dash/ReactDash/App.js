@@ -14,9 +14,11 @@ import {ABLY_API_KEY} from './src/keys';
     disconnect
 
 */
-setConnectOptions({key: ABLY_API_KEY});
+setConnectOptions(ABLY_API_KEY);
+connect();
 
 export default function App() {
+  console.log('Created App');
   return (
     <Navigator></Navigator>
   );

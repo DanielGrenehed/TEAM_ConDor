@@ -21,11 +21,11 @@ const device_controller = {
 */
 const detatchDeviceChannels = () => {
     if (device_controller.out_channel != null) {
-        device_controller.out_channel.detatch();
+        //device_controller.out_channel.detatch();
     }
     if (device_controller.response_channel != null) {
         device_controller.response_channel.unsubscribe();
-        device_controller.response_channel.detatch(); 
+        //device_controller.response_channel.detatch(); 
     }
 };
 
@@ -33,14 +33,15 @@ const detatchDeviceChannels = () => {
     Connenct all device connections
 */
 const attachDeviceChannels = async () => {
-    if (device_controller.device_hid === '') return;
+    if (client === null || device_controller.device_hid === '') return;
     device_controller.out_channel = client.channels.get(device_controller.device_hid);
     device_controller.response_channel = client.channels.get(RESPONSE_CHANNEL_PREFIX + device_controller.device_hid);
 
 
-    device_controller.out_channel.attach();
-    device_controller.response_channel.attach();
+    await device_controller.out_channel.attach();
+    await device_controller.response_channel.attach();
     device_controller.response_channel.subscribe(onDeviceResponse);
+    console.log('Connected to device')
 };
 
 /*
@@ -82,10 +83,15 @@ const getDeviceHID = () => {
     return device_controller.device_hid;
 };
 
-
+const deviceExists = (device) => {
+    device_list_buffer.forEach(function (li) {
+        if (device === li) return true
+    });
+    return false
+};
 
 const addDeviceToList = (device) => {
-    if (device in device_list_buffer) {}
+    if (device_list_buffer.indexOf(device) > -1) {}
     else {
         if (device_connect_callback != null) {
             device_connect_callback(device);
@@ -93,7 +99,7 @@ const addDeviceToList = (device) => {
         device_list_buffer[device_list_buffer.length] = device;
     }
 };
-
+const decoder = new TextDecoder("utf-8");
 const connectToDeviceList = async () => {
     device_list_channel = client.channels.get(DEVICE_LIST_CHANNEL_NAME);
     await device_list_channel.attach();
@@ -104,7 +110,11 @@ const connectToDeviceList = async () => {
     device_list_channel.history({}, function(err, messagesPage) {
         
         for (let i = 0; i < messagesPage.items.length; i++) {
-            addDeviceToList(messagesPage.items[i].data);
+
+            const message = decoder.decode(messagesPage.items[i].data);
+            //console.log(messagesPage.items[i]);
+            //console.log(message);
+            addDeviceToList(message);
         }
     });
 
@@ -139,8 +149,13 @@ const disconnect = () => {
 */
 const connect = () => {
     client = new Ably.Realtime.Promise(connect_options);
-    connectToDeviceList();
-    attatchDeviceChannels();
+    if (client != null) {
+        connectToDeviceList();
+        attachDeviceChannels();
+    } else {
+        console.log('Failed to connect to Ably');
+    }
+    
 };
 
 /*
