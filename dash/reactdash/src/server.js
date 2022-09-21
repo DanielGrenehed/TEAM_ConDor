@@ -3,6 +3,8 @@ import Ably from 'ably';
 const DEVICE_LIST_CHANNEL_NAME = 'device_list';
 const RESPONSE_CHANNEL_PREFIX = 'MCUDEVICE-';
 
+const decoder = new TextDecoder("utf-8");
+
 let connect_options = {};
 let client = null;
 let device_connect_callback = null;
@@ -55,10 +57,18 @@ const setControlledDevice = async (hid) => {
 };
 
 const onDeviceResponse = (response) => {
+
     console.log(response)
-/*    if (device_controller.on_message_callback != null) {
-        device_controller.on_message_callback(response.data);
-    }*/
+    let data = response.data;
+    if (typeof response.data === 'string') {
+        data = parseInt(data);
+    } else {
+        data = parseInt(decoder.decode(data))
+    }
+
+    if (device_controller.on_message_callback != null) {
+        device_controller.on_message_callback(data);
+    }
 };   
 
 /*
@@ -70,8 +80,6 @@ const publishToDevice = async (value) => {
         device_controller.out_channel.publish({data:String(value)}, function(err) {
             if (err) {
                 console.log('publish failed with error ' + err)
-            } else {
-                console.log('published')
             }
         });
     }
@@ -107,7 +115,7 @@ const addDeviceToList = (device) => {
         device_list_buffer[device_list_buffer.length] = device;
     }
 };
-const decoder = new TextDecoder("utf-8");
+
 const connectToDeviceList = async () => {
     device_list_channel = client.channels.get(DEVICE_LIST_CHANNEL_NAME);
     await device_list_channel.attach();
@@ -118,11 +126,18 @@ const connectToDeviceList = async () => {
     device_list_channel.history({}, function(err, messagesPage) {
         
         for (let i = 0; i < messagesPage.items.length; i++) {
-
-            const message = decoder.decode(messagesPage.items[i].data);
+            const item = messagesPage.items[i].data
+            let out = "";
+            if (typeof item === 'string') {
+                console.log(item)
+                out= item;
+            } else {
+                out = decoder.decode(item);
+            }
+            
             //console.log(messagesPage.items[i]);
             //console.log(message);
-            addDeviceToList(message);
+            addDeviceToList(out);
         }
     });
 

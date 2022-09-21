@@ -27,9 +27,9 @@ export default class DeviceView extends Component {
         console.log('in device_view.js');
     }
 
-    onDeviceResponse = (response) => {
+    onDeviceResponse(response) {
         console.log(response)
-        //this.setState({value: respons.rotation})
+        this.setState({value: String(response)})
     }
     
     onSliderUpdate = (x) => {
@@ -37,7 +37,6 @@ export default class DeviceView extends Component {
     }
     onSliderUpdate = (value) => {
         const int = Math.floor(value);
-        console.log(int);
         publishToDevice(int);
         this.setState({value: int})
     }
@@ -58,7 +57,7 @@ export default class DeviceView extends Component {
                 </View>
                 
                 <View style={{
-                    backgroundColor: 'aqua', 
+                    backgroundColor: 'lightgreen', 
                     width: '100%', 
                     position: 'absolute', 
                     top: 0
