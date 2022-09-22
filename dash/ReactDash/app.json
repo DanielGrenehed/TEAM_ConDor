@@ -18,7 +18,8 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.TEAM.ConDorDash"
     },
     "android": {
       "package": "com.TEAM.ConDorDash",
@@ -29,6 +30,11 @@
     },
     "web": {
       "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "56919015-2a9b-49b7-8a56-9c149bd59be8"
+      }
     }
   }
 }

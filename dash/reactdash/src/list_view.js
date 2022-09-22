@@ -27,7 +27,8 @@ export default class ListView extends Component {
     
     addDevice(device) {
         if (this.state.device_list.findIndex(function(item) {
-            return item.key == device}) > -1 ) return;
+            return item.key == device
+        }) > -1 ) { return }
         this.setState(prevState => ({
             device_list: [...prevState.device_list, {key:device, name:device}]
         })) 
