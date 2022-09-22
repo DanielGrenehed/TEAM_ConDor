@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Button, View, Text, StyleSheet, Platform, PlatformColor} from 'react-native';
+import { View, Text, StyleSheet, Platform, PlatformColor} from 'react-native';
 import Slider from '@react-native-community/slider';
 import {setDeviceMessageCallback, publishToDevice, getDeviceHID} from './server'; 
 
